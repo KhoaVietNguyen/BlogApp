@@ -1,100 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.post.PostFragment">
+    android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="25dp"
-        app:cardElevation="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/edDescription"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.55"
-        app:layout_constraintStart_toEndOf="@+id/edTitle"
-        app:layout_constraintTop_toTopOf="parent">
-        
-        <ImageView
-            android:id="@+id/Post"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="center"
-            android:src="@drawable/ic_send_black_24dp"
-            android:contentDescription="TODO" />
-    </androidx.cardview.widget.CardView>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.post.PostFragment">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cvImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/edDescription"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edDescription">
+        <ImageButton
+            android:id="@+id/btnPost"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ic_send_black_24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/edTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/edTitle"
+            app:layout_constraintTop_toTopOf="@+id/edTitle">
 
-        <ImageView
-            android:layout_width="264dp"
-            android:layout_height="202dp"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:background="@drawable/ic_image_black_24dp"
-            android:contentDescription="TODO" />
+        </ImageButton>
 
         <ImageView
             android:id="@+id/imagePost"
-            android:layout_width="397dp"
-            android:layout_height="304dp"
+            android:scaleType="centerInside"
             android:layout_gravity="center"
-            android:scaleType="centerCrop" />
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@id/edDescription"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/placeholder"
+            app:layout_constraintDimensionRatio="16:9"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerTag">
 
-    </androidx.cardview.widget.CardView>
+        </ImageView>
 
-    <EditText
-        android:id="@+id/edTitle"
-        android:layout_width="340dp"
-        android:layout_height="51dp"
+        <EditText
+            android:id="@+id/edTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:autofillHints=""
+            android:background="@drawable/reg_edittxt_style"
+            android:hint="@string/title"
+            android:inputType="textPersonName"
+            android:selectAllOnFocus="true"
+            app:layout_constraintEnd_toStartOf="@+id/btnPost"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loaderPost">
 
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/reg_edittxt_style"
-        android:hint="@string/title"
-        android:inputType="textPersonName"
-        android:selectAllOnFocus="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:autofillHints="">
+        </EditText>
 
-    </EditText>
+        <EditText
+            android:id="@+id/edDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/reg_edittxt_style"
+            android:gravity="top|left"
+            android:hint="@string/description"
+            android:inputType="textMultiLine"
+            android:lines="5"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="vertical"
+            android:selectAllOnFocus="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edTitle" />
 
-    <EditText
-        android:id="@+id/edDescription"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/reg_edittxt_style"
-        android:hint="@string/description"
-        android:inputType="textPersonName"
-        android:selectAllOnFocus="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edTitle"
-        android:autofillHints="" />
+        <Spinner
+            android:id="@+id/spinnerTag"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/reg_edittxt_style"
+            android:popupBackground="@drawable/reg_edittxt_style"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edDescription" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ProgressBar
+            android:id="@+id/loaderPost"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
