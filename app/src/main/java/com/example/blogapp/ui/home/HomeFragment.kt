@@ -1,29 +1,30 @@
 package com.example.blogapp.ui.home
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.bumptech.glide.Glide
+import com.example.blogapp.Activity.SearchActivity
 import com.example.blogapp.CoreApplication
 import com.example.blogapp.Model.*
 import com.example.blogapp.R
-import kotlinx.android.synthetic.main.activity_comments.*
-import kotlinx.android.synthetic.main.fragment_account.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 import kotlin.collections.ArrayList
 
 class HomeFragment : Fragment() {
@@ -36,7 +37,9 @@ class HomeFragment : Fragment() {
 
     var recyclerView: RecyclerView? = null
 
-    val idUser = CoreApplication.instance.getUser()?._id
+    val idUser = CoreApplication.instance.getUser()?.id
+
+    var tvThongBao: TextView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,13 +49,20 @@ class HomeFragment : Fragment() {
         homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-//        val textView: TextView = root.findViewById(R.id.text_home)
-//        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-//            textView.text = it
-//        })
+        val search : ImageView = root.findViewById(R.id.search)
 
+        val imagePost: ImageView = root.findViewById(R.id.post)
+        imagePost.setOnClickListener {
+            findNavController().navigate(R.id.navigation_post, null, null)
+        }
         swipeContainer = root.findViewById(R.id.swipeContainer)
         recyclerView = root.findViewById(R.id.listPost)
+        tvThongBao = root.findViewById(R.id.tvThongBao)
+
+        search.setOnClickListener {
+            val i = Intent(context, SearchActivity::class.java)
+            context?.startActivity(i)
+        }
         events(root)
 
         return root
@@ -88,15 +98,19 @@ class HomeFragment : Fragment() {
                         ltPost = response.body()?.posts!!
                         val postResponse = ltPost.toMutableList()
                         (ltPost as ArrayList<Post>).clear()
-                        if (follow != null)
+                        if (follow != null) {
                             for (i in postResponse.indices)
-                                if (follow!!.contains(postResponse[i].author?.id) || postResponse[i].author?.id?.equals(
-                                        idUser
-                                    )!!
+                                if (follow!!.contains(postResponse[i].author?.id) ||
+                                    postResponse[i].author?.id?.equals(idUser)!!
                                 )
                                     ltPost.add(postResponse[i])
-
+                            tvThongBao?.text = ""
+                        }
                     }
+                    if (ltPost?.isEmpty()!!)
+                        tvThongBao?.text = "No posts available !"
+                    else
+                        tvThongBao?.text = ""
                     listPost.apply {
                         // set a LinearLayoutManager to handle Android
                         // RecyclerView behavior
@@ -127,6 +141,7 @@ class HomeFragment : Fragment() {
                     response: Response<UserResponseModel>
                 ) {
                     follow = response.body()?.user?.follow
+
                 }
             })
     }

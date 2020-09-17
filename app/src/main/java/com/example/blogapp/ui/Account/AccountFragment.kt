@@ -61,7 +61,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
 
     var listPost: List<Post>? = null
     var postAdapter: PostUserAdapter? = null
-    val idUser = CoreApplication.instance.getUser()?._id
+    val idUser = CoreApplication.instance.getUser()?.id
 
     private var mImageUri: Uri? = null
 
@@ -72,17 +72,12 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
         savedInstanceState: Bundle?
     ): View? {
         accountViewModel = ViewModelProvider(this).get(AccountViewModel::class.java)
+
         val root = inflater.inflate(R.layout.fragment_account, container, false)
-//        val textView: TextView = root.findViewById(R.id.text_account)
-//        accountViewModel.text.observe(viewLifecycleOwner, Observer {
-//            textView.text = it
-//        })
-
-
         val loaderUser: ProgressBar = root.findViewById(R.id.loaderUser)
         val btnProfile: Button = root.findViewById(R.id.btnProfile)
-        val following: TextView = root.findViewById(R.id.following)
-        val follower: TextView = root.findViewById(R.id.followers)
+        val following: LinearLayout = root.findViewById(R.id.followingLayOut)
+        val follower: LinearLayout = root.findViewById(R.id.followersLayout)
         val options: ImageView = root.findViewById(R.id.options)
 
         options.setOnClickListener {
@@ -408,7 +403,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
         getInfoUser()
         getTagUser()
         swipeContainer?.setOnRefreshListener {
-            layoutAcc?.visibility = View.INVISIBLE
+            //layoutAcc?.visibility = View.INVISIBLE
             val handler = Handler()
             handler.postDelayed({
                 getPost(root)
@@ -524,12 +519,6 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
             })
     }
 
-    private fun openGalleryForImage() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/"
-        startActivityForResult(intent, REQUEST_CODE)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         imagePost = viewUpdate?.findViewById(R.id.imagePostUpdate)
@@ -576,7 +565,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
         view.context.startActivity(i)
     }
 
-    override fun onLongClick(view: Post, position: Int, v: View) {
+    override fun onLongClick(item: Post, position: Int, v: View) {
 
         val imagePost: ImageView? = viewUpdate?.findViewById(R.id.imagePostUpdate)
         val titlePost: EditText? = viewUpdate?.findViewById(R.id.edTitleUpdate)
@@ -599,7 +588,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
         // Finally, data bind the spinner object with adapter
         spTag?.adapter = adapter
         for (i in tagName.indices)
-            if (tagName[i] == view.tag?.name) {
+            if (tagName[i] == item.tag?.name) {
                 spTag?.setSelection(i)
                 tag = i
             }
@@ -631,12 +620,12 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
         }
 
         imagePost?.let {
-            Glide.with(this).load(view.image)
+            Glide.with(this).load(item.image)
                 .into(it)
         }
 
-        titlePost?.setText(view.title)
-        contentPost?.setText(view.mainContent)
+        titlePost?.setText(item.title)
+        contentPost?.setText(item.mainContent)
         titlePost?.setSelection(titlePost.text.length)
 
 
@@ -647,7 +636,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
         alert.setView(viewUpdate)
         alert.setPositiveButton("Change") { dialog, which ->
 
-            if (titlePost?.text?.isNotEmpty()!! && contentPost?.text?.isNotEmpty()!!) {
+            if (titlePost?.text?.trim()?.isNotEmpty()!! && contentPost?.text?.trim()?.isNotEmpty()!!) {
                 val filePart: MultipartBody.Part? = if (file == null)
                     null
                 else
@@ -672,7 +661,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
                         tag?.let { it1 -> tagResponse.get(it1).id })
 
                 val date =
-                    RequestBody.create(MediaType.parse("multipart/form-data"), view.date)
+                    RequestBody.create(MediaType.parse("multipart/form-data"), item.date)
 
                 val builder = viewUpdate?.context.let { it1 -> AlertDialog.Builder(it1!!) }
                 builder.setTitle("Warning!")
@@ -688,7 +677,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
                         date,
                         idTag,
                         content,
-                        view.id
+                        item.id
                     )
                         .enqueue(object : Callback<PostOneResponseModel> {
                             override fun onFailure(call: Call<PostOneResponseModel>, t: Throwable) {
@@ -708,7 +697,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
 //                            ).show()
                                 loaderUser.visibility = View.GONE
                                 Log.i("info", response.body()?.success.toString())
-                                tagName.removeAll(tagName)
+                                //tagName.removeAll(tagName)
                                 response.body()?.post?.let { it1 ->
                                     (listPost as ArrayList<Post>).set(
                                         position,
@@ -716,7 +705,6 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
                                     )
                                 }
                                 postAdapter?.notifyItemChanged(position)
-
                             }
                         })
 
@@ -744,7 +732,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
 
                 builder.setPositiveButton("Yes") { dialog, which ->
 
-                    APIClient.instance.deletePost(token, view.id)
+                    APIClient.instance.deletePost(token, item.id)
                         .enqueue(object : Callback<PostDeleteResponseModel> {
                             override fun onFailure(
                                 call: Call<PostDeleteResponseModel>,
@@ -784,7 +772,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
         dialog.show()
 
         titlePost?.afterTextChanged {
-            if (titlePost.text.isEmpty()) {
+            if (titlePost.text.trim().isEmpty()) {
                 titlePost.error = "Invalid Title"
                 titlePost.requestFocus()
             }
@@ -793,7 +781,7 @@ class AccountFragment : Fragment(), PostUserAdapter.ItemClickListener {
         }
 
         contentPost?.afterTextChanged {
-            if (contentPost.text.isEmpty()) {
+            if (contentPost.text.trim().isEmpty()) {
                 contentPost.error = "Invalid Content"
                 contentPost.requestFocus()
             }

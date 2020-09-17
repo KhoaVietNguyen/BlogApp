@@ -2,8 +2,6 @@ package com.example.blogapp.Model
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.res.Resources
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,34 +9,32 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.blogapp.Activity.CommentActivity
 import com.example.blogapp.Activity.UserInfoActivity
 import com.example.blogapp.CoreApplication
 import com.example.blogapp.R
-import com.example.blogapp.ui.home.HomeFragment
 import de.hdodenhof.circleimageview.CircleImageView
-import kotlinx.android.synthetic.main.activity_comments.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
+
 
 //private val fragment: View
 class PostAdapter(private val dataArrayList: List<Post>) :
     RecyclerView.Adapter<PostAdapter.BaseViewHolder<*>>() {
     var view: View? = null
 
-    val idUser = CoreApplication.instance.getUser()?._id
+    val idUser = CoreApplication.instance.getUser()?.id
 
 
     interface ItemClickListener {
         fun onClick(view: View, position: Int)
     }
+
+    var key = 0
 
     abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
         abstract fun bind(item: T)
@@ -138,9 +134,9 @@ class PostAdapter(private val dataArrayList: List<Post>) :
                 }
 
                 holder.userLayout.setOnClickListener { view ->
-                    if (element.author?.id.equals(idUser))
+                    if (element.author?.id.equals(idUser)) {
                         view.findNavController().navigate(R.id.navigation_Account)
-                    else {
+                    } else {
                         val i = Intent(view?.context, UserInfoActivity::class.java)
                         i.putExtra("idUser", element.author?.id)
                         view?.context?.startActivity(i)

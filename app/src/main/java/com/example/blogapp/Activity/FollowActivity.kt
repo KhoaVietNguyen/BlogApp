@@ -10,13 +10,13 @@ import com.example.blogapp.Model.User
 import com.example.blogapp.Model.UserAdapter
 import com.example.blogapp.Model.UsersResponseModel
 import com.example.blogapp.R
-import kotlinx.android.synthetic.main.fragment_friend.*
+import kotlinx.android.synthetic.main.fragment_search_info.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class FollowActivity : AppCompatActivity(), UserAdapter.ItemClickListener {
-    private val idUser = CoreApplication.instance.getUser()?._id
+    private val idUser = CoreApplication.instance.getUser()?.id
     val token = CoreApplication.instance.getUser()?.token
     var listUser: List<User>? = null
     var userAdapter: UserAdapter? = null
@@ -27,7 +27,6 @@ class FollowActivity : AppCompatActivity(), UserAdapter.ItemClickListener {
         val rootView = window.decorView.rootView
         val key = intent.getStringExtra("key")
         setSupportActionBar(toolbar)
-
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { finish() }
         if (key == "following") {

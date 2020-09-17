@@ -91,6 +91,12 @@ interface APIInterface {
     fun getPost(
     ): Call<PostResponseModel>
 
+    @GET("post/getPostWithTag/{key}")
+    fun getPostWithTag(
+        @Header("token") token: String?,
+        @Path("key") key: String?
+    ): Call<PostResponseModel>
+
     @GET("post/{id}")
     fun getOnePost(
         @Path("id") id: String?

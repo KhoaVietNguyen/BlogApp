@@ -1,6 +1,5 @@
 package com.example.blogapp.ui
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -17,15 +16,14 @@ import com.example.blogapp.Activity.afterTextChanged
 import com.example.blogapp.CoreApplication
 import com.example.blogapp.Model.*
 import com.example.blogapp.R
-import kotlinx.android.synthetic.main.fragment_account.*
-import kotlinx.android.synthetic.main.fragment_friend.*
+import kotlinx.android.synthetic.main.fragment_search_info.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class SearchUserFragment : Fragment(), UserAdapter.ItemClickListener {
 
-    private val idUser = CoreApplication.instance.getUser()?._id
+    private val idUser = CoreApplication.instance.getUser()?.id
     val token = CoreApplication.instance.getUser()?.token
     var listUser: List<User>? = null
     var userAdapter: UserAdapter? = null
@@ -38,7 +36,7 @@ class SearchUserFragment : Fragment(), UserAdapter.ItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_friend, container, false)
+        val root = inflater.inflate(R.layout.fragment_search_info, container, false)
         swipeContainer = root.findViewById(R.id.swipeContainer)
         recyclerView = root.findViewById(R.id.recycler_view)
 
@@ -103,7 +101,7 @@ class SearchUserFragment : Fragment(), UserAdapter.ItemClickListener {
                     listUser = response.body()?.users!!
                     var index = 0
                     for (i in listUser!!.indices)
-                        if (listUser!![i]._id.equals(idUser))
+                        if (listUser!![i].id.equals(idUser))
                             index = i
                     (listUser as ArrayList<User>).removeAt(index)
                     recycler_view.apply {
@@ -215,7 +213,7 @@ class SearchUserFragment : Fragment(), UserAdapter.ItemClickListener {
     }
 
     override fun onClick(item: User, position: Int, view: View) {
-        item._id?.let { getInfoUser(it, position) }
+        item.id?.let { getInfoUser(it, position) }
     }
 
 }

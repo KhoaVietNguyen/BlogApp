@@ -15,18 +15,14 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.blogapp.CoreApplication
 import com.example.blogapp.Model.*
 import com.example.blogapp.R
-import com.example.blogapp.ui.Account.AccountFragment
 import kotlinx.android.synthetic.main.activity_comments.*
 import kotlinx.android.synthetic.main.activity_comments.toolbar
-import kotlinx.android.synthetic.main.fragment_friend.*
+import kotlinx.android.synthetic.main.fragment_account.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,7 +31,7 @@ import retrofit2.Response
 class CommentActivity : AppCompatActivity(), CommentAdapter.ItemClickListener {
 
     val token = CoreApplication.instance.getUser()?.token
-    val idUser = CoreApplication.instance.getUser()?._id
+    val idUser = CoreApplication.instance.getUser()?.id
     var idPost: String? = null
     var idAuthorPost: String? = null
     var key: String? = null
@@ -85,12 +81,7 @@ class CommentActivity : AppCompatActivity(), CommentAdapter.ItemClickListener {
                 .into(commentProfilePic)
         }
 
-        this.let {
-            Glide.with(it).load(obj.author?.avatar)
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.ic_image_black_24dp)
-                .into(avatarUser)
-        }
+
 
         idPost?.let { loadComment(it) }
 
@@ -138,6 +129,7 @@ class CommentActivity : AppCompatActivity(), CommentAdapter.ItemClickListener {
 
     }
 
+
     fun loadComment(id: String) {
         APIClient.instance.getOnePost(id)
             .enqueue(object : Callback<PostOneResponseModel> {
@@ -152,6 +144,11 @@ class CommentActivity : AppCompatActivity(), CommentAdapter.ItemClickListener {
                     call: Call<PostOneResponseModel>,
                     response: Response<PostOneResponseModel>
                 ) {
+
+                    Glide.with(applicationContext).load(response.body()?.post?.author?.avatar)
+                        .placeholder(R.drawable.placeholder)
+                        .into(avatarUser)
+
                     loadeComment.visibility = View.GONE
                     tvLike.text = response.body()?.post?.fan!!.size.toString()
                     checkLiked(response.body()?.post?.fan!!)
@@ -181,25 +178,25 @@ class CommentActivity : AppCompatActivity(), CommentAdapter.ItemClickListener {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        if (key == null) {
-            finish()
-            val i = Intent(this, HomeActivity::class.java)
-            startActivity(i)
-        } else
-            finish()
-        return true
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        if (key == null) {
-            finish()
-            val i = Intent(this, HomeActivity::class.java)
-            startActivity(i)
-        } else
-            finish()
-    }
+//    override fun onSupportNavigateUp(): Boolean {
+//        if (key == null) {
+//            finish()
+//            val i = Intent(this, HomeActivity::class.java)
+//            startActivity(i)
+//        } else
+//            finish()
+//        return true
+//    }
+//
+//    override fun onBackPressed() {
+//        super.onBackPressed()
+//        if (key == null) {
+//            finish()
+//            val i = Intent(this, HomeActivity::class.java)
+//            startActivity(i)
+//        } else
+//            finish()
+//    }
 
     private fun closeKeyBoard() {
         val view = this.currentFocus

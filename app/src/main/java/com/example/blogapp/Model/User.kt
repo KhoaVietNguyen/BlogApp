@@ -17,7 +17,7 @@ class User {
     var token: String? = null
 
     @SerializedName("_id")
-    var _id: String? = null
+    var id: String? = null
 
     @SerializedName("follows")
     var follow: List<String>? = null

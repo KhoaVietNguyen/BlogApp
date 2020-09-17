@@ -22,7 +22,9 @@ import com.example.blogapp.Model.Tag
 import com.example.blogapp.Model.TagResponseModel
 import com.example.blogapp.R
 import com.theartofdev.edmodo.cropper.CropImage
+import kotlinx.android.synthetic.main.fragment_account.*
 import kotlinx.android.synthetic.main.fragment_post.*
+import kotlinx.android.synthetic.main.fragment_post.toolbar
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -136,12 +138,12 @@ class PostFragment : Fragment() {
 
 
         btnPost.setOnClickListener {
-            if (edTitle.text.isEmpty()) {
+            if (edTitle.text.trim().isEmpty()) {
                 edTitle.error = "Title required"
                 edTitle.requestFocus()
                 return@setOnClickListener
             }
-            if (edContent.text.isEmpty()) {
+            if (edContent.text.trim().isEmpty()) {
                 edContent.error = "Description required"
                 edContent.requestFocus()
                 return@setOnClickListener
@@ -188,16 +190,21 @@ class PostFragment : Fragment() {
                         call: Call<PostResponseModel>,
                         response: Response<PostResponseModel>
                     ) {
-                        if (response.body()?.success!!) {
+                        try {
+                            if (response.body()?.success!!) {
+                                findNavController().navigate(R.id.navigation_home, null, null)
 //                            loader.visibility = View.GONE
 //                            Toast.makeText(context, "Thành công", Toast.LENGTH_LONG).show()
-
+                            }
+                        }catch (e: Exception){
+                            Toast.makeText(
+                                context,
+                                "Kiểm tra thông tin nhập !",
+                                Toast.LENGTH_LONG).show()
+                            loader.visibility = View.GONE
                         }
-                        findNavController().navigate(R.id.navigation_home, null, null)
                     }
-
                 })
-
         }
 
         val imgPost: ImageView = root.findViewById(R.id.imagePost)

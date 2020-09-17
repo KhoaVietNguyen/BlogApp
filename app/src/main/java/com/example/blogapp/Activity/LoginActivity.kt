@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -14,11 +16,10 @@ import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Toast
+import androidx.annotation.IntRange
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.example.blogapp.CoreApplication
 import com.example.blogapp.Model.APIClient
@@ -40,9 +41,12 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
+        val rootView = window.decorView.rootView
+
+        if (getConnectionType() == 0)
+            dialogMessenger("Warning !", "Please check the network connection !")
 
         if (CoreApplication.instance.getUser() != null) {
-
             val emailSave = CoreApplication.instance.getUser()!!.email
             var passSave = CoreApplication.instance.getUser()!!.plainPassword
             edEmail.setText(emailSave)
@@ -61,7 +65,6 @@ class LoginActivity : AppCompatActivity() {
 
         login.setOnClickListener {
             closeKeyBoard()
-
             if (Is_Valid_Email(edEmail) && Is_Valid_Pass(edPassword)) {
 
                 login.isEnabled = false
@@ -71,37 +74,78 @@ class LoginActivity : AppCompatActivity() {
                 val email = edEmail.text.toString().trim()
                 val password = edPassword.text.toString().trim()
 
-                APIClient.instance.signin(email, password)
-                    .enqueue(object : Callback<UserResponseModel> {
-                        override fun onFailure(call: Call<UserResponseModel>, t: Throwable) {
-                            loader.visibility = View.GONE
-                            login.isEnabled = true
-                            containerLogin.isEnabled = true
-                            t.message?.let { it1 -> dialogMessenger("Warning !", it1) }
-                        }
-
-                        override fun onResponse(
-                            call: Call<UserResponseModel>,
-                            response: Response<UserResponseModel>
-                        ) {
-                            login.isEnabled = true
-                            containerLogin.isEnabled = true
-                            loader.visibility = View.GONE
-                            if (response.body()?.success == true) {
-                                response.body()!!.user.plainPassword = edPassword.text.toString()
-                                CoreApplication.instance.saveUser(response.body()!!.user)
-                                val intent = Intent(this@LoginActivity, HomeActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            } else Snackbar.make(
-                                it,
-                                "Wrong email or password",
-                                Snackbar.LENGTH_LONG
-                            ).show()
-                        }
-                    })
+                signIn(email, password, rootView)
             }
         }
+    }
+
+    private fun signIn(email: String, password: String, v: View) {
+        APIClient.instance.signin(email, password)
+            .enqueue(object : Callback<UserResponseModel> {
+                override fun onFailure(call: Call<UserResponseModel>, t: Throwable) {
+                    loader.visibility = View.GONE
+                    login.isEnabled = true
+                    containerLogin.isEnabled = true
+                    t.message?.let { it1 -> dialogMessenger("Warning !", it1) }
+                }
+
+                override fun onResponse(
+                    call: Call<UserResponseModel>,
+                    response: Response<UserResponseModel>
+                ) {
+                    login.isEnabled = true
+                    containerLogin.isEnabled = true
+                    loader.visibility = View.GONE
+                    if (response.body()?.success == true) {
+                        response.body()!!.user.plainPassword =
+                            edPassword.text.toString()
+                        CoreApplication.instance.saveUser(response.body()!!.user)
+                        val intent =
+                            Intent(this@LoginActivity, HomeActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else Snackbar.make(
+                        v,
+                        "Wrong email or password",
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            })
+    }
+
+    @IntRange(from = 0, to = 3)
+    fun getConnectionType(): Int {
+        var result = 0 // Returns connection type. 0: none; 1: mobile data; 2: wifi
+        val cm = this.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (cm != null) {
+                val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
+                if (capabilities != null) {
+                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                        result = 2
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                        result = 1
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                        result = 3
+                    }
+                }
+            }
+        } else {
+            if (cm != null) {
+                val activeNetwork = cm.activeNetworkInfo
+                if (activeNetwork != null) {
+                    // connected to the internet
+                    if (activeNetwork.type == ConnectivityManager.TYPE_WIFI) {
+                        result = 2
+                    } else if (activeNetwork.type == ConnectivityManager.TYPE_MOBILE) {
+                        result = 1
+                    } else if (activeNetwork.type == ConnectivityManager.TYPE_VPN) {
+                        result = 3
+                    }
+                }
+            }
+        }
+        return result
     }
 
     private fun requestPermission() {
@@ -221,7 +265,7 @@ class LoginActivity : AppCompatActivity() {
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle(title)
         alertDialog.setMessage(message)
-        alertDialog.setPositiveButton("OK") { dialog, which -> }
+        alertDialog.setPositiveButton("OK") { dialog, which -> finish()}
         alertDialog.show()
     }
 

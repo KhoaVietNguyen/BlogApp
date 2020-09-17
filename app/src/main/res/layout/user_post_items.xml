@@ -27,11 +27,10 @@
                 android:id="@+id/blogDateUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
                 android:layout_marginBottom="8dp"
                 android:text="mm/dd/yyyy"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/blogImageUser"
+                app:layout_constraintStart_toStartOf="@+id/blogTitleUser"
                 app:layout_constraintTop_toBottomOf="@+id/blogTitleUser" />
 
             <ImageView
@@ -39,28 +38,25 @@
                 android:id="@+id/blogImageUser"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:scaleType="centerInside"
-                android:src="@color/colorPrimary"
+                android:src="@drawable/placeholder"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:singleLine="true"
-                android:ellipsize="end"
                 android:id="@+id/blogTitleUser"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:fontFamily="@font/open_sans_semibold"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:text="@string/title"
+                android:textAllCaps="true"
                 android:textColor="#000000"
-                android:textSize="18sp"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/blogImageUser"
+                app:layout_constraintStart_toStartOf="@+id/tvTagUser"
                 app:layout_constraintTop_toBottomOf="@+id/tvTagUser" />
 
             <TextView
@@ -78,7 +74,7 @@
                 android:paddingRight="5dp"
                 android:text="Tag"
                 android:textColor="#000E19"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

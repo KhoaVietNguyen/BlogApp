@@ -26,7 +26,7 @@ class PostUserAdapter(
 
     interface ItemClickListener {
         fun onClick(item: Post, position: Int, view: View)
-        fun onLongClick(view: Post, position: Int, v: View)
+        fun onLongClick(item: Post, position: Int, v: View)
     }
 
     abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {

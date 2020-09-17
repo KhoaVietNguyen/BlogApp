@@ -9,12 +9,12 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.blogapp.CoreApplication
 import com.example.blogapp.Model.*
 import com.example.blogapp.R
-import kotlinx.android.synthetic.main.activity_comments.*
 import kotlinx.android.synthetic.main.fragment_account.*
 import kotlinx.android.synthetic.main.fragment_account.toolbar
 import retrofit2.Call
@@ -23,7 +23,7 @@ import retrofit2.Response
 
 class UserInfoActivity : AppCompatActivity(), PostUserAdapter.ItemClickListener {
     val token = CoreApplication.instance.getUser()?.token
-    val idUser = CoreApplication.instance.getUser()?._id
+    val idUser = CoreApplication.instance.getUser()?.id
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,15 +32,17 @@ class UserInfoActivity : AppCompatActivity(), PostUserAdapter.ItemClickListener 
         val rootView = window.decorView.rootView
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
         toolbar.setNavigationOnClickListener { finish() }
-        supportActionBar!!.title
         getPostInfoUser(id, rootView)
         events(id, rootView)
+
+        options.visibility = View.GONE
     }
 
     private fun events(id: String, v: View) {
         swipeContainer?.setOnRefreshListener {
-            layoutAcc?.visibility = View.INVISIBLE
+            //layoutAcc?.visibility = View.INVISIBLE
             val handler = Handler()
             handler.postDelayed({ getPostInfoUser(id, v) }, 500)
         }
@@ -92,7 +94,10 @@ class UserInfoActivity : AppCompatActivity(), PostUserAdapter.ItemClickListener 
                     followers.text = "${listFollowed?.size}"
                     following.text = "${listFollow?.size}"
                     Glide.with(applicationContext).load(avatar)
+                        .placeholder(R.drawable.placeholder)
                         .into(imageUser)
+
+                    username.text = name
 
                     tvUserName.text = name
                     tvUserEmail.text = email
@@ -257,7 +262,13 @@ class UserInfoActivity : AppCompatActivity(), PostUserAdapter.ItemClickListener 
 
                     } else {
                         btnProfile.text = "+ FOLLOW"
-
+                        btnProfile.setBackgroundResource(R.drawable.button_background)
+                        this@UserInfoActivity.let { ContextCompat.getColor(it, R.color.colorPrimary) }
+                            .let {
+                                btnProfile.setTextColor(
+                                    it
+                                )
+                            }
                     }
                     getInfoUser(id)
                 }
@@ -284,7 +295,7 @@ class UserInfoActivity : AppCompatActivity(), PostUserAdapter.ItemClickListener 
         view.context.startActivity(i)
     }
 
-    override fun onLongClick(view: Post, position: Int, v: View) {
-        TODO("Not yet implemented")
+    override fun onLongClick(item: Post, position: Int, v: View) {
+
     }
 }

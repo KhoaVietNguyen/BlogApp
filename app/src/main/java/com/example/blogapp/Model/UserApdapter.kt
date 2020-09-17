@@ -1,6 +1,5 @@
 package com.example.blogapp.Model
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -16,8 +15,6 @@ import com.bumptech.glide.Glide
 import com.example.blogapp.Activity.UserInfoActivity
 import com.example.blogapp.CoreApplication
 import com.example.blogapp.R
-import com.google.android.material.color.MaterialColors.getColor
-import kotlinx.android.synthetic.main.fragment_account.*
 
 class UserAdapter(
     private val dataArrayList: List<User>,
@@ -123,11 +120,11 @@ class UserAdapter(
                 holder.bind(element)
                 holder.avatar.setOnClickListener {
                     val i = Intent(view?.context, UserInfoActivity::class.java)
-                    i.putExtra("idUser", element._id)
+                    i.putExtra("idUser", element.id)
                     i.putExtra("key", "key")
                     view?.context?.startActivity(i)
                 }
-                val idUser = CoreApplication.instance.getUser()?._id
+                val idUser = CoreApplication.instance.getUser()?.id
                 if (element.followed?.contains(idUser)!!) {
                     holder.follow.text = "Following"
                     holder.follow.setBackgroundResource(R.drawable.button_background_conf)

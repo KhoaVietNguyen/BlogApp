@@ -2,10 +2,7 @@ package com.example.blogapp.ui
 
 import android.os.Bundle
 import android.os.Handler
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +18,7 @@ import com.example.blogapp.Activity.afterTextChanged
 import com.example.blogapp.CoreApplication
 import com.example.blogapp.Model.*
 import com.example.blogapp.R
-import kotlinx.android.synthetic.main.fragment_friend.*
+import kotlinx.android.synthetic.main.fragment_search_info.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,28 +27,40 @@ import kotlin.collections.ArrayList
 
 
 class FriendFragment : Fragment(), UserAdapter.ItemClickListener {
-    private val idUser = CoreApplication.instance.getUser()?._id
+    private val idUser = CoreApplication.instance.getUser()?.id
     val token = CoreApplication.instance.getUser()?.token
     var listUser: List<User>? = null
     var userAdapter: UserAdapter? = null
+    var swipeContainer: SwipeRefreshLayout? = null
+
+    var recyclerView: RecyclerView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val root = inflater.inflate(R.layout.fragment_friend, container, false)
+        val root = inflater.inflate(R.layout.fragment_search_info, container, false)
         var searchBar: EditText = root.findViewById(R.id.search_bar)
-        var swipeContainer: SwipeRefreshLayout = root.findViewById(R.id.swipeContainer)
+        swipeContainer = root.findViewById(R.id.swipeContainer)
+        recyclerView = root.findViewById(R.id.recycler_view)
 
-        swipeContainer.isEnabled = false
-        getUser(root)
+        events(root)
 
         searchBar.afterTextChanged {
             searchfriend(searchBar.text.toString(), root)
         }
 
         return root
+    }
+
+    private fun events(root: View) {
+        getUser(root)
+        swipeContainer?.setOnRefreshListener {
+            recyclerView?.visibility = View.INVISIBLE
+            val handler = Handler()
+            handler.postDelayed({ getUser(root) }, 500)
+        }
     }
 
     private fun searchfriend(s: CharSequence, root: View) {
@@ -102,8 +111,8 @@ class FriendFragment : Fragment(), UserAdapter.ItemClickListener {
                         userAdapter!!.view = root
                         adapter = userAdapter
                     }
-                    //swipeContainer!!.isRefreshing = false
-                    //recyclerView!!.visibility = View.VISIBLE
+                    swipeContainer!!.isRefreshing = false
+                    recyclerView!!.visibility = View.VISIBLE
                 }
             })
     }
@@ -154,8 +163,8 @@ class FriendFragment : Fragment(), UserAdapter.ItemClickListener {
             "Unfollow"
         ) { dialog, which ->
             run {
-                item._id?.let { unfollow(it, position) }
-                item._id?.let { unfollowed(it) }
+                item.id?.let { unfollow(it, position) }
+                item.id?.let { unfollowed(it) }
             }
         }
         alert.setNegativeButton("Cancel") { dialog, which ->
